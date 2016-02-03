@@ -1,7 +1,10 @@
+import pandas as pd
+import pymysql as mdb
+import json
+
 from a_Model import ModelIt
 from flask import render_template, request 
 from app import app
-import pymysql as mdb
 
 VioCode = {0:'Pass',
            1:'Food Protection Management',
@@ -29,58 +32,50 @@ def index():
 # render_template looks for the html file in its default folder templates
 #  See documentation from http://flask.pocoo.org/docs/0.10/quickstart/
 
-@app.route('/db')
-def cities_page():
-    db= mdb.connect(user="root", host="localhost", passwd = "0520", db="world_innodb", charset='utf8')
-    with db: 
-        cur = db.cursor()
-        cur.execute("SELECT Name FROM City LIMIT 15;")
-        query_results = cur.fetchall()
-    cities = ""
-    for result in query_results:
-        cities += result[0]
-        cities += "<br>"
-    return cities
-
-@app.route("/db_fancy")
-def cities_page_fancy():
-    with db:
-        cur = db.cursor()
-        cur.execute("SELECT Name, CountryCode, Population FROM City ORDER BY Population LIMIT 15;")
-        query_results = cur.fetchall()
-    cities = []
-    for result in query_results:
-        cities.append(dict(name=result[0], country=result[1], population=result[2]))
-    return render_template('cities.html', cities=cities) 
-
 @app.route('/input')
-def cities_input():
-    return render_template("input.html")
-
-#@app.route('/output')
-#def cities_output():
-#    return render_template("output.html")
-
-@app.route('/output')
-def cities_output():
-    # pull 'ID' from input field and store it
-    city = request.args.get('ID')
-    db= mdb.connect(user="root", host="localhost", passwd = "0520", db="world_innodb", charset='utf8')
+def safefood_input():
+    zipcode = request.args.get('ID')
+    db= mdb.connect(user="root", host="localhost", passwd = "0520", db="citydb", charset='utf8')
+    
     with db:
         cur = db.cursor()
         #just select the city from the world_innodb that the user inputs
-        cur.execute("SELECT Name, CountryCode,  Population FROM City WHERE Name='%s';" % city)
+        cur.execute("SELECT * FROM singleInsp order by VioLevel_pred desc;")
         query_results = cur.fetchall()
-    cities = []
-    for result in query_results:
-        cities.append(dict(name=result[0], country=result[1], population=result[2]))
-    #call a function from a_Model package. note we are only pulling one result in the query
-    pop_input = cities[0]['population']
-    the_result = ModelIt(city, pop_input)
-    return render_template("output.html", cities = cities, the_result = the_result)
+    
+    restaurants = []; restaurants_txt = []
+    restKeys = ['Index','Name','VioLevel','VioType','VioLevel_pred','VioType_pred','Rating',
+                'PropValue','Zip','locLong','locLati','Category']
+    CategList = ['arts','food','nightlife','hotelstravel','restaurants','eventservices']
+    numResult = len(query_results)
+        
+    
+    restaurants_df = pd.DataFrame(columns = restKeys, index = range(numResult))
+    for restInd in range(len(query_results)):
+        # restKeys are same as column names of MySQL table, except the coded categories in MySQL are removed, and 'Category' is added
+        result = list(query_results[restInd])
+        categ = ''
+        for i in range(len(result)-len(restKeys)+1):         
+            if result[i+len(restKeys)-1] == 1: categ += CategList[i]+', '
+    
+        restValues = [result[j] for j in range(len(restKeys)-1)]
 
-@app.route('/safefoodmap')
-def safefoodmap():
+        restValues.append(categ)
+        restValues_txt = list(restValues)
+        restValues_txt[3]  = VioCode[int(float(restValues_txt[3]))]
+        restValues_txt[5]  = VioCode[int(float(restValues_txt[5]))]
+        restInfo = dict(zip(restKeys, restValues))
+        restInfo_txt = dict(zip(restKeys, restValues_txt))
+        restaurants.append(restInfo) # list of dictionaries, readable by html
+        restaurants_txt.append(restInfo_txt) # list of dictionaries, readable by html
+        restaurants_df.iloc[restInd,:] = restValues
+    map_center = [restaurants_df.locLati.astype(float).mean(),restaurants_df.locLong.astype(float).mean()]
+    restaurants_json = json.loads(restaurants_df.to_json())
+    
+    return render_template("input.html", map_center = map_center, restaurants = restaurants, restaurants_json = restaurants_json, restaurants_txt = restaurants_txt)
+
+@app.route('/output')
+def safefood_output():
     zipcode = request.args.get('ID')
     db= mdb.connect(user="root", host="localhost", passwd = "0520", db="citydb", charset='utf8')
     
@@ -90,38 +85,40 @@ def safefoodmap():
         cur.execute("SELECT * FROM singleInsp WHERE Zip='%s' order by VioLevel_pred desc;" % zipcode)
         query_results = cur.fetchall()
     
-    restaurants = []
+    restaurants = []; restaurants_txt = []
     restKeys = ['Index','Name','VioLevel','VioType','VioLevel_pred','VioType_pred','Rating',
                 'PropValue','Zip','locLong','locLati','Category']
     CategList = ['arts','food','nightlife','hotelstravel','restaurants','eventservices']
     numResult = len(query_results)
     print numResult, 'restaurants found'
     
-    for result in query_results: # each result represents a restaurant
+    
+    restaurants_df = pd.DataFrame(columns = restKeys, index = range(numResult))
+    for restInd in range(len(query_results)):
         # restKeys are same as column names of MySQL table, except the coded categories in MySQL are removed, and 'Category' is added
-        result = list(result)
-        result[3]  = VioCode[int(result[3])]
-        result[5]  = VioCode[int(result[5])]	 
+        result = list(query_results[restInd])
+        #result[3]  = VioCode[int(result[3])]
+        #result[5]  = VioCode[int(result[5])]	 
         categ = ''
         for i in range(len(result)-len(restKeys)+1):         
             if result[i+len(restKeys)-1] == 1: categ += CategList[i]+', '
-        restValues = [str(result[i]) for i in range(len(restKeys)-1)] 
+        restValues = [result[j] for j in range(len(restKeys)-1)]
         restValues.append(categ)
+        restValues_txt = list(restValues)
+        restValues_txt[3]  = VioCode[int(float(restValues_txt[3]))]
+        restValues_txt[5]  = VioCode[int(float(restValues_txt[5]))]
         restInfo = dict(zip(restKeys, restValues))
-        restaurants.append(restInfo)
-    #print restaurants
+        restInfo_txt = dict(zip(restKeys, restValues_txt))
+        restaurants.append(restInfo) # list of dictionaries, readable by html
+        restaurants_txt.append(restInfo_txt) # list of dictionaries, readable by html
+        restaurants_df.iloc[restInd,:] = restValues
+    map_center = [restaurants_df.locLati.astype(float).mean(),restaurants_df.locLong.astype(float).mean()]
+    restaurants_json = json.loads(restaurants_df.to_json())
+    #print restaurants_json
+    #print restaurants_df.head()
     #call a function from a_Model package. note we are only pulling one result in the query
     #pop_input = cities[0]['population']
     #the_result = ModelIt(city, pop_input)
-    return render_template("output.html", numResult = numResult, restaurants = restaurants)
-
-@app.route('/mapexample')
-def show_map():
-    return render_template("mapexample.html")
-
-@app.route('/momap')
-def show_momap():
-    return render_template("momap.html")
-    
+    return render_template("output.html", numResult = numResult, map_center = map_center, restaurants = restaurants, restaurants_json = restaurants_json, restaurants_txt = restaurants_txt)    
 
 

@@ -7,4 +7,6 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
     accessToken: 'pk.eyJ1Ijoic2hpbW9sdTUyMyIsImEiOiJjaWswbjk3cjkzYWR5dm9raTgxaXhrejNmIn0.Z9EirFx5JhpxrXCAI65AJQ'
 }).addTo(map);
 
+//var restaurants_json = {{restaurants_json|tojson}}
+
 

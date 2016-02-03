@@ -8,17 +8,17 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Inspection Smart</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="starter-template.css" rel="stylesheet">
+    <link href="../static/css/starter-template.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+    <!--<script src="../../assets/js/ie-emulation-modes-warning.js"></script>-->
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -50,13 +50,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+          <a class="navbar-brand active" href="#">Inspection Smart</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <!--<li class="active"><a href="#">Home</a></li>-->
+            <li><a href="https://github.com/shimolu523">Github</a></li>
+            <li><a href="https://www.linkedin.com/in/molu-shi-9003301b">LinkedIn</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -66,33 +66,27 @@
 <br><br>
 
   <div class="container">
-    <div class="starter-template">
-        <h2>Safe Food Search</h2>
+    <div class = "starter-template" style= "text-align:center">
+        <h2>Inspection area</h2>
         <p>Enter your 5 digit zip code to look up restaurants</p>
-    </div>
 
-    <div class = "container">
-
-      <form  action="/safefoodmap" method="GET">
+      <form  action="/output" method="GET">
         <div class="form-group">
           <label for="ID">Zip code:</label>
-          <input type="text" id="ID" name='ID' placeholder="e.g. 02131">
+          <input type="text" id="ID" name='ID' placeholder="e.g. 02116">
         </div>
         <div>
           <button type="submit" class="btn btn-default btn-lg">Search this area</button>
         </div>
       </form>
+      <h3>Results:</h3>
+      <p class="lead">{{numResult}} of restaurants found in this area.</p>
     </div>
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="static/js/bootstrap.min.js"></script>
-
-  </div> <!-- /.container-->
-
-    <div class="container">
-      <div class="starter-template">
-        <h3>Results:</h3>
-        <p class="lead">{{numResult}} of restaurants found in this area.<br><!--restaurants corresponding to your zip code search.--></p>
-      </div>
+    <script src="../static/js/bootstrap.min.js"></script>
+ 
+      
+      <div id="map" style="height: 440px; border: 1px solid #AAA;"></div>
 
       <table class="table table-hover">
       <tr><th>Restaurant</th>
@@ -101,25 +95,19 @@
           <th>Property Val.</th>
           <th>Exp. Viol. (Lev,Type)</th>
           <th>Rec. Insp. (Lev, Type)</th></tr>
-      {% for restaurant in restaurants %}
+      {% for restaurant in restaurants_txt %}
       <tr><td>{{ restaurant['Name'] }}</td>
           <td>{{ restaurant['Category'] }}</td>
           <td>{{ restaurant['Rating'] }}</td>
           <td>{{ restaurant['PropValue'] }}</td>
-          <td>{{ restaurant['VioLevel_pred'] + ', ' + restaurant['VioType_pred'] }}</td>
-          <td>{{ restaurant['VioLevel'] + ', ' + restaurant['VioType'] }}</td></tr>
+          <td>{{ restaurant['VioLevel_pred']}}, {{restaurant['VioType_pred'] }}</td>
+          <td>{{ restaurant['VioLevel']}}, {{restaurant['VioType'] }}</td></tr>
       {% endfor %}
       </table>
     </div><!-- /.container -->
 
     <div class="container">
-      <div class="starter-template">
-          <p>Here's an interactive map indicating the countries I've either lived in or travelled through for a month or more.
-      </div>
-
-      <div id="map" style="height: 440px; border: 1px solid #AAA;"></div>
-      <script src='maps/markers.json'></script>
-      <script src='maps/leaf-demo.js'></script>
+      
     </div><!-- /.container -->
 
     
@@ -128,8 +116,43 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- <script src="../../dist/js/bootstrap.min.js"></script> -->
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+    <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
+    <script>
+      var restaurants_json = {{restaurants_json|tojson}};
+      var map_center = {{map_center}}
+      var numRest = Object.keys(restaurants_json['Index']).length
+      var map = L.map('map').setView(map_center, 15);
+      var layer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
+                        {attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+                                       <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, \
+                                       Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                         maxZoom: 18,
+                         id: 'shimolu523.p1g0bd7h',
+                         accessToken: 'pk.eyJ1Ijoic2hpbW9sdTUyMyIsImEiOiJjaWswbjk3cjkzYWR5dm9raTgxaXhrejNmIn0.Z9EirFx5JhpxrXCAI65AJQ'
+                        });
+      layer.addTo(map);
+      
+      var circle = new Array(numRest);
+      var color = new Array(numRest);
+      var level = new Array(numRest);
+      for ( var i=0; i < numRest; ++i ) {
+            color[i] = '#' + ( Math.pow( 2, 7 + parseInt( restaurants_json['VioType_pred'][i] ) ) ).toString(16);
+            level[i] = 15 + 10 * parseInt( restaurants_json['VioLevel_pred'][i] );
+            //console.log(color[i])
+            //console.log(restaurants_json['VioType_pred'][i])
+            circle[i] = L.circle( [parseFloat(restaurants_json['locLati'][i]), parseFloat(restaurants_json['locLong'][i])], level[i], 
+                                  { color: '#FFFFFF', fillColor: color[i], fillOpacity: 0.8 } );
+            circle[i].addTo( map );
+            var Popup  = "<dl><dt>"+restaurants_json['Name'][i]+"</dt>"
+                         + "<dd> Vio.: " + restaurants_json['VioType_pred'][i] + ", " 
+                         + "Lev: " + restaurants_json['VioLevel_pred'][i] +"</dd></dl>";
+            circle[i].bindPopup( Popup );
+          };
+ 
+    </script>
+
+
   </body>
 </html>
