@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Inspection Smart</title>
+    <title>Smart Inspector</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">
@@ -52,6 +52,7 @@
             <!--<li class="active"><a href="#">Home</a></li>-->
             <li><a href="https://github.com/shimolu523">Github</a></li>
             <li><a href="https://www.linkedin.com/in/molu-shi-9003301b">LinkedIn</a></li>
+            <li><a href="https://docs.google.com/presentation/d/1sVI4iYmAhpdNQr5Wo2vOgppik6v82hGM7no0i2wlLic/pub?start=false&loop=false&delayms=3000">Slides</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -70,7 +71,7 @@
       <form  action="/output" method="GET">
         <div class="form-group">
           <label for="ID">Zip code:</label>
-          <input type="text" id="ID" name='ID' placeholder="e.g. 02131">
+          <input type="text" id="ID" name='ID' placeholder="e.g. 02116">
         </div>
         <div>
           <button type="submit" class="btn btn-default btn-lg">Search this area</button>
