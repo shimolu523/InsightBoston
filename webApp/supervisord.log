@@ -1,0 +1,69 @@
+2016-02-03 07:36:40,347 CRIT Set uid to user 0
+2016-02-03 07:36:40,352 INFO daemonizing the supervisord process
+2016-02-03 07:36:40,353 INFO supervisord started with pid 1372
+2016-02-03 07:36:41,355 INFO spawned: 'myserver' with pid 1373
+2016-02-03 07:36:41,451 DEBG 'myserver' stderr output:
+[2016-02-03 07:36:41 +0000] [1373] [INFO] Starting gunicorn 19.4.5
+[2016-02-03 07:36:41 +0000] [1373] [INFO] Listening at: http://0.0.0.0:80 (1373)
+[2016-02-03 07:36:41 +0000] [1373] [INFO] Using worker: sync
+
+2016-02-03 07:36:41,453 DEBG 'myserver' stderr output:
+[2016-02-03 07:36:41 +0000] [1378] [INFO] Booting worker with pid: 1378
+
+2016-02-03 07:36:41,523 DEBG 'myserver' stderr output:
+[2016-02-03 07:36:41 +0000] [1381] [INFO] Booting worker with pid: 1381
+
+2016-02-03 07:36:41,524 DEBG 'myserver' stderr output:
+[2016-02-03 07:36:41 +0000] [1382] [INFO] Booting worker with pid: 1382
+
+2016-02-03 07:36:41,539 DEBG 'myserver' stderr output:
+[2016-02-03 07:36:41 +0000] [1383] [INFO] Booting worker with pid: 1383
+
+2016-02-03 07:36:42,540 INFO success: myserver entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2016-02-03 07:38:27,731 DEBG 'myserver' stderr output:
+[2016-02-03 07:38:27 +0000] [1373] [CRITICAL] WORKER TIMEOUT (pid:1383)
+[2016-02-03 07:38:27 +0000] [1383] [INFO] Worker exiting (pid: 1383)
+
+2016-02-03 07:38:27,749 DEBG 'myserver' stderr output:
+[2016-02-03 07:38:27 +0000] [1400] [INFO] Booting worker with pid: 1400
+
+2016-02-03 15:14:31,579 DEBG 'myserver' stderr output:
+[2016-02-03 15:14:31 +0000] [1373] [CRITICAL] WORKER TIMEOUT (pid:1400)
+[2016-02-03 15:14:31 +0000] [1400] [INFO] Worker exiting (pid: 1400)
+
+2016-02-03 15:14:31,583 DEBG 'myserver' stderr output:
+[2016-02-03 15:14:31 +0000] [1373] [CRITICAL] WORKER TIMEOUT (pid:1381)
+[2016-02-03 15:14:31 +0000] [1381] [INFO] Worker exiting (pid: 1381)
+
+2016-02-03 15:14:31,587 DEBG 'myserver' stderr output:
+[2016-02-03 15:14:31 +0000] [1373] [CRITICAL] WORKER TIMEOUT (pid:1382)
+[2016-02-03 15:14:31 +0000] [1382] [INFO] Worker exiting (pid: 1382)
+
+2016-02-03 15:14:31,645 DEBG 'myserver' stderr output:
+[2016-02-03 15:14:31 +0000] [1758] [INFO] Booting worker with pid: 1758
+
+2016-02-03 15:14:31,646 DEBG 'myserver' stderr output:
+[2016-02-03 15:14:31 +0000] [1759] [INFO] Booting worker with pid: 1759
+
+2016-02-03 15:14:31,652 DEBG 'myserver' stderr output:
+[2016-02-03 15:14:31 +0000] [1760] [INFO] Booting worker with pid: 1760
+
+2016-02-03 15:21:00,623 WARN received SIGTERM indicating exit request
+2016-02-03 15:21:00,623 DEBG killing myserver (pid 1373) with signal SIGTERM
+2016-02-03 15:21:00,623 INFO waiting for myserver to die
+2016-02-03 15:21:00,628 DEBG 'myserver' stderr output:
+[2016-02-03 15:21:00 +0000] [1373] [INFO] Handling signal: term
+[2016-02-03 15:21:00 +0000] [1760] [INFO] Worker exiting (pid: 1760)
+
+2016-02-03 15:21:00,643 DEBG 'myserver' stderr output:
+[2016-02-03 15:21:00 +0000] [1378] [INFO] Worker exiting (pid: 1378)
+[2016-02-03 15:21:00 +0000] [1758] [INFO] Worker exiting (pid: 1758)
+[2016-02-03 15:21:00 +0000] [1759] [INFO] Worker exiting (pid: 1759)
+
+2016-02-03 15:21:00,727 DEBG 'myserver' stderr output:
+[2016-02-03 15:21:00 +0000] [1373] [INFO] Shutting down: Master
+
+2016-02-03 15:21:00,732 DEBG fd 8 closed, stopped monitoring <POutputDispatcher at 140066825723272 for <Subprocess at 140066825722768 with name myserver in state STOPPING> (stderr)>
+2016-02-03 15:21:00,732 DEBG fd 6 closed, stopped monitoring <POutputDispatcher at 140066825723200 for <Subprocess at 140066825722768 with name myserver in state STOPPING> (stdout)>
+2016-02-03 15:21:00,732 INFO stopped: myserver (exit status 0)
+2016-02-03 15:21:00,732 DEBG received SIGCLD indicating a child quit

@@ -26,8 +26,8 @@ VioCode = {0:'Pass',
 
 @app.route('/')
 @app.route('/index')
-def index():
-    return render_template("index.html", title = 'Home')
+#def index():
+#    return render_template("index.html", title = 'Home')
 
 # render_template looks for the html file in its default folder templates
 #  See documentation from http://flask.pocoo.org/docs/0.10/quickstart/
