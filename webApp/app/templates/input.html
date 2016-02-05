@@ -98,6 +98,7 @@
     <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
     <script>
       var restaurants_json = {{restaurants_json|tojson}};
+      var restaurants_txtjson = {{restaurants_txtjson|tojson}};
       var map_center = {{map_center}}
       var numRest = Object.keys(restaurants_json['Index']).length
       var map = L.map('map').setView(map_center, 13);
@@ -115,14 +116,15 @@
       var color = new Array(numRest);
       var level = new Array(numRest);
       for ( var i=0; i < numRest; ++i ) {
-            color[i] = '#' + ( Math.pow( 2, 7 + parseInt( restaurants_json['VioType_pred'][i] ) ) ).toString(16);
+            //color[i] = '#' + ( Math.pow( 2, 10 + parseInt( restaurants_json['VioType_pred'][i] ) ) ).toString(16);
+            color[i] = '#' + ( 130 * parseInt( restaurants_json['VioType_pred'][i] ) ).toString(16);
             level[i] = 30 + 30 * parseInt( restaurants_json['VioLevel_pred'][i] );
             circle[i] = L.circle( [parseFloat(restaurants_json['locLati'][i]), parseFloat(restaurants_json['locLong'][i])], level[i], 
                                   { color: '#FFFFFF', fillColor: color[i], fillOpacity: 0.8 } );
             circle[i].addTo( map );
             var Popup  = "<dl><dt>"+restaurants_json['Name'][i]+"</dt>"
-                         + "<dd> Vio.: " + restaurants_json['VioType_pred'][i] + ", " 
-                         + "Lev: " + restaurants_json['VioLevel_pred'][i] +"</dd></dl>";
+                         + "<dd> Vio.: " + restaurants_txtjson['VioType_pred'][i] + ", " 
+                         + "Lev: " + restaurants_txtjson['VioLevel_pred'][i] +"</dd></dl>";
             circle[i].bindPopup( Popup );
           };
  
