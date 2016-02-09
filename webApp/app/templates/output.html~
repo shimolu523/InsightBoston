@@ -50,7 +50,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand active" href="#">Inspection Smart</a>
+          <a class="navbar-brand active" href="#">Smart Inspector</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
@@ -91,18 +91,16 @@
 
       <table class="table table-hover">
       <tr><th>Restaurant</th>
-          <th>Category</th>
-          <th>Rating</th>
-          <th>Property Val.</th>
-          <th>Expected Violation (Level,Type)</th>
-          <th>Recent Inspection (Level, Type)</th></tr>
+          <th>Address</th>
+          <th>Expected Violation Type</th>
+          <th>Expected Violation Level</th>
+          <th>Recent Inspection (Type, Level)</th></tr>
       {% for restaurant in restaurants_txt %}
       <tr><td>{{ restaurant['Name'] }}</td>
-          <td>{{ restaurant['Category'] }}</td>
-          <td>{{ restaurant['Rating'] }}</td>
-          <td>{{ restaurant['PropValue'] }}</td>
-          <td>{{ restaurant['VioLevel_pred']}}, {{restaurant['VioType_pred'] }}</td>
-          <td>{{ restaurant['VioLevel']}}, {{restaurant['VioType'] }}</td></tr>
+          <td>{{ restaurant['Address'] }}</td>
+          <td>{{ restaurant['VioType_pred'] }}</td>
+          <td>{{ restaurant['VioLevel_pred']}}</td>
+          <td>{{restaurant['VioType'] }}, {{ restaurant['VioLevel']}}</td></tr>
       {% endfor %}
       </table>
     </div><!-- /.container -->
@@ -121,7 +119,10 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
     <script>
+      //var test = {{test}}
       var restaurants_json = {{restaurants_json|tojson}};
+      var restaurants_txtjson = {{restaurants_txtjson|tojson}};
+      var restaurants_coljson = {{restaurants_coljson|tojson}};
       var map_center = {{map_center}}
       var numRest = Object.keys(restaurants_json['Index']).length
       var map = L.map('map').setView(map_center, 15);
@@ -135,11 +136,16 @@
                         });
       layer.addTo(map);
       
+      //var info = L.control();
+      //info.anAdd = function
+
       var circle = new Array(numRest);
       var color = new Array(numRest);
       var level = new Array(numRest);
       for ( var i=0; i < numRest; ++i ) {
-            color[i] = '#' + ( Math.pow( 2, 7 + parseInt( restaurants_json['VioType_pred'][i] ) ) ).toString(16);
+            //color[i] = '#' + ( Math.pow( 2, 7 + parseInt( restaurants_json['VioType_pred'][i] ) ) ).toString(16);
+            //color[i] = '#' + ( 130 * parseInt( restaurants_json['VioType_pred'][i]+1 ) ).toString(16);
+            color[i] = restaurants_coljson['VioType_pred'][i]
             level[i] = 15 + 10 * parseInt( restaurants_json['VioLevel_pred'][i] );
             //console.log(color[i])
             //console.log(restaurants_json['VioType_pred'][i])
@@ -147,10 +153,31 @@
                                   { color: '#FFFFFF', fillColor: color[i], fillOpacity: 0.8 } );
             circle[i].addTo( map );
             var Popup  = "<dl><dt>"+restaurants_json['Name'][i]+"</dt>"
-                         + "<dd> Vio.: " + restaurants_json['VioType_pred'][i] + ", " 
-                         + "Lev: " + restaurants_json['VioLevel_pred'][i] +"</dd></dl>";
+                         + "<dd> Violation: " + restaurants_txtjson['VioType_pred'][i] + ", " 
+                         + "Lev " + restaurants_txtjson['VioLevel_pred'][i] +"</dd></dl>";
             circle[i].bindPopup( Popup );
           };
+     
+      var legend = L.control({position:'bottomright'});
+      legend.onAdd = function (map) {
+          
+          var div = L.DomUtil.create('div', 'info legend');
+          {% for code in VioCode %}
+          //legeColor = '#' + ( 130 * parseInt( {{code + 1}} ) ).toString(16)
+          legeColor = '{{colCode[code]}}'
+          //legeColor = '#' + ( Math.pow( 2, parseInt( {{code + 1}} ) )).toString(16);
+          div.innerHTML += '<i style="background:'+ legeColor +'"></i>'+ '{{VioCode[code]}}' + '<br>';
+          {% endfor %}
+          //for ( var i=0; i < 17; ++i ) {
+          //    div.innerHTML += '<i style="background:'+'#6e016b'+'"></i>'+ '{{VioCode[i]}}' + '<br>';
+              //console.log(VioCode)
+          //  };
+          
+
+          //div.innerHTML += '<i style="background:'+'#6e016b'+'"></i>'+ 'Hello';
+          return div;
+          };
+      legend.addTo(map);
  
     </script>
 

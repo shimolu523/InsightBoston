@@ -119,8 +119,10 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
     <script>
+
       var restaurants_json = {{restaurants_json|tojson}};
       var restaurants_txtjson = {{restaurants_txtjson|tojson}};
+      var restaurants_coljson = {{restaurants_coljson|tojson}};
       var map_center = {{map_center}}
       var numRest = Object.keys(restaurants_json['Index']).length
       var map = L.map('map').setView(map_center, 15);
@@ -134,12 +136,15 @@
                         });
       layer.addTo(map);
       
+
+
       var circle = new Array(numRest);
       var color = new Array(numRest);
       var level = new Array(numRest);
       for ( var i=0; i < numRest; ++i ) {
             //color[i] = '#' + ( Math.pow( 2, 7 + parseInt( restaurants_json['VioType_pred'][i] ) ) ).toString(16);
-            color[i] = '#' + ( 130 * parseInt( restaurants_json['VioType_pred'][i] ) ).toString(16);
+            //color[i] = '#' + ( 130 * parseInt( restaurants_json['VioType_pred'][i]+1 ) ).toString(16);
+            color[i] = restaurants_coljson['VioType_pred'][i]
             level[i] = 15 + 10 * parseInt( restaurants_json['VioLevel_pred'][i] );
             //console.log(color[i])
             //console.log(restaurants_json['VioType_pred'][i])
@@ -151,6 +156,18 @@
                          + "Lev " + restaurants_txtjson['VioLevel_pred'][i] +"</dd></dl>";
             circle[i].bindPopup( Popup );
           };
+     
+      var legend = L.control({position:'bottomright'});
+      legend.onAdd = function (map) {
+          
+          var div = L.DomUtil.create('div', 'info legend');
+          {% for code in VioCode %}
+          legeColor = '{{colCode[code]}}'
+          div.innerHTML += '<i style="background:'+ legeColor +'"></i>'+ '{{VioCode[code]}}' + '<br>';
+          {% endfor %}
+          return div;
+          };
+      legend.addTo(map);
  
     </script>
 
