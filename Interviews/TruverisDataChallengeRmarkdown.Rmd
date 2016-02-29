@@ -1,0 +1,51 @@
+---
+title: "Truveris Data Challenge"
+author: "Molu Shi"
+date: "February 24, 2016"
+output: pdf_document
+---
+
+Q1: The data are subject to sample bias. To make it more reflective of reality, we must adjust the copay distribution of this data set to match the national copay distribution (Table 1, page 3). How would you approach this problem using a function in R? What are the conceptual and technical considerations that shape your approach? Please let our data scientists know by jotting down a plan in 10 sentences or fewer.
+
+```{r}
+# Setting home directory to where the data set is contained
+#setwd('Documents/GitDocs/InsightBoston/Interviews/')
+# Loading data using the xlsx library
+require(xlsx)
+dfRaw <- read.xlsx("TruverisChallengeData.xlsx", sheetIndex = 1, header = TRUE)
+# Inspecting the data:
+print(colnames(dfRaw))
+print(head(dfRaw))
+# We're mostly interested in distribution of copay, which is the co_pay_amt column
+# Obtaining the current co_pay_amt distribution
+print(summary(dfRaw$co_pay_amt))
+hist(dfRaw$co_pay_amt, 
+     main="PDF of current copay",     
+     xlab="copay amount",     
+     border="black",     
+     col="blue",     
+     xlim=c(0,130),  
+     breaks=c( seq(from = 0, to = 120, by = 10), 290))
+# Now plotting the distribution of the national copy distribution:
+# The 130 below is a normalization constant
+pdfNatCopay <- c(56.57,6.9,8.29,5.87,8.18,4.63,1.34,1.50,0.29,3.72,2.10,0.24,0.35)/100/130
+barplot(pdfNatCopay, main="PDF of current copay", 
+        xlab="copay amount")
+```
+We see that the distribtutions are indeed slightly different. To have the sample data match the national copay distribution, re-sampling according to the national copay distribution can be used.
+
+
+Q3: Coupons allow drug manufacturers to subsidize drug consumption in the hope of increasing sales. The manufacturers of Abece have thus asked Truveris to design a coupon program for Abece. They want roughly a third of prescriptions for Abece to be ‘redeemed’ — that is, subsidized — by the coupon program. Based on Table 1 and redemption distribution data (Table 2, page 3), we know that around 16 percent of Abece prescriptions are currently redeemed with coupons. We can see from Table 2 that redemption rates increase with copay. This makes sense; the higher one is supposed to pay for Abece, the more likely one would go out of one’s way to find a coupon and to fill one’s prescription with a coupon. Your challenge is to write a second function in R, this time to add a new field to the data set that will mark around 33 percent of the prescriptions with a ‘Y’ for ‘yes, redeemed’ and the rest of the prescriptions with an ‘N’ for ‘not redeemed’. Please retain heterogeneity in redemption rates across copay buckets. Ideally, your function would work on our computers at Truveris. Many reasonable target redemption distributions could solve this challenge. In the process of overcoming this challenge, please pick one reasonable choiceand explain your thought process.
+
+Q4: Please use the original claim dataset to build out a model that predicts patients' reversal likelihood as a function of their copay for Abece. Once more, many reasonable target redemption distributions could solve this challenge. In the process of overcoming this challenge, please pick one reasonable choice and explain your thought process.
+
+```{r}
+# Histogram of reversal:
+hist(dfRaw$reversal, 
+     main="PDF of current copay",     
+     xlab="copay amount",     
+     border="black",     
+     col="blue",     
+     xlim=c(0,130),  
+     breaks=c( seq(from = 0, to = 120, by = 10), 290))
+```
